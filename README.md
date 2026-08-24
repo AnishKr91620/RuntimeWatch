@@ -127,6 +127,14 @@ unhandledrejection     BullMQ queue               WebSocket updates
 
 ---
 
+## Database Schema Design
+
+The database is designed around users, projects, error groups, and individual error occurrences. A project acts as the boundary for collected errors, while error groups aggregate repeated occurrences of the same error to keep the dashboard concise and efficient.
+
+![Database Schema](./assets/schema-design.png)
+
+---
+
 ## Tech Stack
 
 | Layer           | Technology                          |
