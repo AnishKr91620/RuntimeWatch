@@ -37,5 +37,5 @@ const generateFingerprint = (message, stack) => {
 
   return crypto.createHash("sha256").update(raw).digest("hex");
 };
-
 module.exports = { generateFingerprint, parseStackTrace };
+

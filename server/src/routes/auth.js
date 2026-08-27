@@ -6,10 +6,12 @@ const pool = require("../config/db");
 const { v4: uuidv4 } = require("uuid");
 
 const SALT_ROUNDS = 12;
+const isProd = process.env.NODE_ENV === "production";
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "none",
+  secure: isProd,
+  sameSite: isProd ? "none" : "lax",
+  path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
@@ -60,6 +62,16 @@ router.post("/signup", async (req, res) => {
     });
   } catch (err) {
     console.error("Signup error:", err);
+    if (
+      err.code === "ETIMEDOUT" ||
+      err.code === "ENOTFOUND" ||
+      err.code === "ECONNREFUSED"
+    ) {
+      return res.status(503).json({
+        error:
+          "Cannot reach the database. Check DB_HOST, DB_PORT, and that MySQL is running.",
+      });
+    }
     res.status(500).json({ error: "Internal server error" });
   }
 });

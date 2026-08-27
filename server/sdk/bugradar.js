@@ -98,14 +98,26 @@
       },
       body: JSON.stringify(payload),
       keepalive: true,
-    }).catch(function (err) {
-      if (!navigator.onLine) {
-        console.warn("[BugRadar] Offline — queuing error for later");
-        offlineQueue.push(payload);
-      } else {
-        console.warn("[BugRadar] Failed to send error:", err.message);
-      }
-    });
+    })
+      .then(function (res) {
+        if (!res.ok) {
+          console.warn(
+            "[BugRadar] Server rejected error:",
+            res.status,
+            res.statusText,
+          );
+          return;
+        }
+        console.log("[BugRadar] Error sent:", payload.message);
+      })
+      .catch(function (err) {
+        if (!navigator.onLine) {
+          console.warn("[BugRadar] Offline — queuing error for later");
+          offlineQueue.push(payload);
+        } else {
+          console.warn("[BugRadar] Failed to send error:", err.message);
+        }
+      });
   }
 
   function captureError(message, stack, extraMetadata) {
@@ -128,19 +140,23 @@
     sendToServer(payload);
   }
 
-  window.onerror = function (message, source, lineno, colno, error) {
+  window.addEventListener("error", function (event) {
+    const error = event.error;
+    const message = error
+      ? error.message
+      : event.message || "Unknown error";
     const stack =
       error && error.stack
         ? error.stack
-        : `Error at ${source}:${lineno}:${colno}`;
+        : `Error at ${event.filename}:${event.lineno}:${event.colno}`;
 
     captureError(message, stack, {
       type: "onerror",
-      source,
-      lineno,
-      colno,
+      source: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
     });
-  };
+  });
 
   window.addEventListener("unhandledrejection", function (event) {
     const error = event.reason;

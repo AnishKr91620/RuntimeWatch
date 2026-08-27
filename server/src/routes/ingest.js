@@ -6,6 +6,7 @@ const { generateFingerprint } = require("../utils/fingerprint");
 const { errorQueue } = require("../config/queue");
 
 router.post("/", validateApiKey, validatePayload, async (req, res) => {
+  console.log("Ingesting error:", req.body);
   try {
     const { message, stack, url, userAgent, metadata } = req.body;
 

@@ -21,4 +21,18 @@ const poll = mysql.createPool({
   connectionLimit: 10,
 });
 
+async function assertDbConnection() {
+  try {
+    await poll.query("SELECT 1");
+    console.log(
+      `MySQL connected (${process.env.DB_HOST}:${process.env.DB_PORT || 3306})`,
+    );
+  } catch (err) {
+    console.error(
+      `MySQL connection failed (${err.code}): cannot reach ${process.env.DB_HOST}:${process.env.DB_PORT || 3306}.`,
+    );
+  }
+}
+
 module.exports = poll;
+module.exports.assertDbConnection = assertDbConnection;

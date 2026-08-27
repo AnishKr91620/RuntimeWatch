@@ -13,6 +13,7 @@ require("./src/workers/alertWorker");
 const ingest = require("./src/routes/ingest");
 const auth = require("./src/routes/auth");
 const project = require("./src/routes/projects");
+const { assertDbConnection } = require("./src/config/db");
 
 const REQUIRED_ENV = [
   "DB_HOST",
@@ -82,6 +83,7 @@ const server = http.createServer(app);
 setupWebSocket(server);
 
 const PORT = process.env.PORT || 5020;
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`BugRadar server is running on ${PORT}`);
+  await assertDbConnection();
 });

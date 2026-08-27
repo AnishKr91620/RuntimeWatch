@@ -1,5 +1,7 @@
-CREATE DATABASE IF NOT EXISTS bugradar;
-USE bugradar;
+-- Run against the database in DB_NAME (Aiven uses defaultdb).
+-- For a local MySQL instance you can create a dedicated DB first:
+--   CREATE DATABASE IF NOT EXISTS bugradar;
+--   USE bugradar;
 
 CREATE TABLE IF NOT EXISTS users (
   id VARCHAR(36) PRIMARY KEY DEFAULT (UUID()),
